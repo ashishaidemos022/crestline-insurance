@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Sans, DM_Serif_Display, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
+import TalkdeskChat from '@/components/shared/TalkdeskChat'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -39,7 +40,10 @@ export default function RootLayout({
       className={`${dmSans.variable} ${dmSerifDisplay.variable} ${ibmPlexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <TalkdeskChat />
+      </body>
     </html>
   )
 }
