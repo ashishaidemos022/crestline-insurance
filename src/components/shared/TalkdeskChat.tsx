@@ -2,6 +2,21 @@
 
 import { useEffect } from 'react'
 
+function getAuthenticatedCustomer() {
+  try {
+    const stored = sessionStorage.getItem('crestline_customer')
+    if (!stored) return null
+    return JSON.parse(stored) as {
+      customer_id: string
+      first_name: string
+      last_name: string
+      email: string
+    }
+  } catch {
+    return null
+  }
+}
+
 export default function TalkdeskChat() {
   useEffect(() => {
     if (document.getElementById('tdwebchatscript')) return
@@ -26,6 +41,31 @@ export default function TalkdeskChat() {
         accountId: '',
         region: 'td-us-1',
       })
+
+      function sendCustomerContext() {
+        const customer = getAuthenticatedCustomer()
+        if (customer) {
+          webchat.setContextParam({
+            customer_id: customer.customer_id,
+            customer_email: customer.email,
+            customer_name: `${customer.first_name} ${customer.last_name}`,
+            authenticated: 'true',
+          })
+        } else {
+          webchat.setContextParam({
+            authenticated: 'false',
+          })
+        }
+      }
+
+      webchat.onConversationStart = function () {
+        sendCustomerContext()
+      }
+
+      webchat.onOpenWebchat = function () {
+        sendCustomerContext()
+      }
+
       webchat.init({
         enableValidation: false,
         enableEmoji: true,
